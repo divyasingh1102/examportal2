@@ -1,0 +1,6 @@
+{
+  "name": "CampusPulse - Academic Portal & Student Registry",
+  "description": "Unified university academic intelligence platform featuring live schedule tracking, milestone deadlines, campus communiques, grade analytics, and PulseAI student assistance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
