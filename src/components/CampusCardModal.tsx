@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
-import { X, CreditCard, DollarSign, PlusCircle, ArrowDownLeft, ArrowUpRight, CheckCircle2 } from 'lucide-react';
+import { X, CreditCard, DollarSign, PlusCircle, ArrowDownLeft, ArrowUpRight, CheckCircle2, ShoppingBag } from 'lucide-react';
 
 interface CampusCardModalProps {
   isOpen: boolean;
   onClose: () => void;
   balance: number;
   onAddFunds: (amount: number) => void;
+  onOpenStore?: () => void;
 }
 
 export const CampusCardModal: React.FC<CampusCardModalProps> = ({
   isOpen,
   onClose,
   balance,
-  onAddFunds
+  onAddFunds,
+  onOpenStore
 }) => {
   const [selectedAmount, setSelectedAmount] = useState<number>(25);
   const [success, setSuccess] = useState(false);
@@ -130,6 +132,31 @@ export const CampusCardModal: React.FC<CampusCardModalProps> = ({
                 ))}
               </div>
             </div>
+
+            {/* Store & Registry Quick Link */}
+            {onOpenStore && (
+              <div className="p-3 rounded-xl bg-[#faf8ff] border border-[#dae2fd] flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-lg bg-[#e2e7ff] text-[#0051d5]">
+                    <ShoppingBag className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-[#131b2e]">Campus Store & Supplies</p>
+                    <p className="text-[11px] text-[#757682]">Order course packets, lab kits & books</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenStore();
+                  }}
+                  className="px-3 py-1.5 bg-[#0051d5] text-white rounded-lg text-xs font-semibold hover:bg-[#00236f] transition-colors cursor-pointer"
+                >
+                  Order Items
+                </button>
+              </div>
+            )}
 
             {/* Actions */}
             <div className="pt-3 flex items-center justify-end gap-3 border-t border-[#e2e7ff]">

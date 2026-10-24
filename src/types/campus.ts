@@ -13,6 +13,13 @@ export interface StudentProfile {
   unreadNoticesCount: number;
   enrolledCredits: number;
   cardBalance: number;
+  email?: string;
+  major?: string;
+  advisor?: string;
+  academicStatus?: string;
+  attendanceRate?: string;
+  completedCredits?: number;
+  totalCredits?: number;
 }
 
 export interface FacultyProfile {
@@ -120,4 +127,32 @@ export interface FacultyMember {
   research: string[];
   coursesTaught: string[];
   availableToday: boolean;
+}
+
+export interface CampusItem {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  price: number;
+  stock: number;
+  inStock: boolean;
+  badge?: string;
+}
+
+export interface ItemOrder {
+  id: string;
+  buyerName: string;
+  buyerId: string;
+  buyerEmail: string;
+  pickupLocation: string;
+  itemId: string;
+  itemName: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+  paymentMethod: string;
+  status: 'Pending' | 'Confirmed' | 'Ready for Pickup' | 'Completed' | 'Cancelled';
+  notes?: string;
+  createdAt?: string;
 }

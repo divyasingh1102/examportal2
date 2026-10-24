@@ -20,7 +20,98 @@ export const mockStudent: StudentProfile = {
   unreadNoticesCount: 2,
   enrolledCredits: 16,
   cardBalance: 38.50,
+  email: 'alex.chen@campus.edu',
+  major: 'Computer Science & Engineering',
+  advisor: 'Prof. Marcus Miller',
+  academicStatus: 'Dean\'s Honors List (In Good Standing)',
+  attendanceRate: '98%',
+  completedCredits: 84,
+  totalCredits: 120
 };
+
+export const mockStudentsRegistry: StudentProfile[] = [
+  mockStudent,
+  {
+    name: 'Maya Patel',
+    id: '#984211',
+    year: 'CS Junior (Yr 3)',
+    cohort: 'CS 3rd Year Cohort',
+    term: 'Spring 2025 • Term B',
+    gpa: 3.91,
+    cohortRank: 'Top 2% CS Cohort',
+    activeDeadlinesCount: 2,
+    unreadNoticesCount: 1,
+    enrolledCredits: 18,
+    cardBalance: 52.00,
+    email: 'maya.patel@campus.edu',
+    major: 'Computer Systems & Cyber-Physical AI',
+    advisor: 'Prof. Elena Rostova',
+    academicStatus: 'President\'s Scholar (Highest Honors)',
+    attendanceRate: '100%',
+    completedCredits: 88,
+    totalCredits: 120
+  },
+  {
+    name: 'Liam O\'Connor',
+    id: '#984212',
+    year: 'CS Junior (Yr 3)',
+    cohort: 'CS 3rd Year Cohort',
+    term: 'Spring 2025 • Term B',
+    gpa: 3.65,
+    cohortRank: 'Top 15% CS Cohort',
+    activeDeadlinesCount: 4,
+    unreadNoticesCount: 3,
+    enrolledCredits: 15,
+    cardBalance: 14.25,
+    email: 'l.oconnor@campus.edu',
+    major: 'Distributed Cloud Architecture',
+    advisor: 'Prof. Marcus Miller',
+    academicStatus: 'In Good Standing',
+    attendanceRate: '94%',
+    completedCredits: 78,
+    totalCredits: 120
+  },
+  {
+    name: 'Sophia Zhang',
+    id: '#984213',
+    year: 'CS Junior (Yr 3)',
+    cohort: 'CS 3rd Year Cohort',
+    term: 'Spring 2025 • Term B',
+    gpa: 3.98,
+    cohortRank: 'Rank #1 in Class (Valedictorian Track)',
+    activeDeadlinesCount: 1,
+    unreadNoticesCount: 0,
+    enrolledCredits: 20,
+    cardBalance: 110.00,
+    email: 'sophia.zhang@campus.edu',
+    major: 'Theoretical Computer Science & Cryptography',
+    advisor: 'Prof. Kenneth Vance',
+    academicStatus: 'Turing Research Fellow (Summa Cum Laude)',
+    attendanceRate: '99%',
+    completedCredits: 92,
+    totalCredits: 120
+  },
+  {
+    name: 'David Kim',
+    id: '#984214',
+    year: 'CS Junior (Yr 3)',
+    cohort: 'CS 3rd Year Cohort',
+    term: 'Spring 2025 • Term B',
+    gpa: 3.74,
+    cohortRank: 'Top 10% CS Cohort',
+    activeDeadlinesCount: 3,
+    unreadNoticesCount: 1,
+    enrolledCredits: 16,
+    cardBalance: 45.00,
+    email: 'david.kim@campus.edu',
+    major: 'Machine Learning & High-Compute Systems',
+    advisor: 'Prof. Kenneth Vance',
+    academicStatus: 'Dean\'s Honors List',
+    attendanceRate: '96%',
+    completedCredits: 82,
+    totalCredits: 120
+  }
+];
 
 export const mockFaculty: FacultyProfile = {
   name: 'Prof. Marcus Miller',
@@ -406,4 +497,56 @@ export const mockLibraryPods = [
   { id: 'pod-4', name: 'Focus Pod 304', floor: 'Floor 3 Silent Zone', status: 'available', hasMonitor: true, powerOutlet: true },
   { id: 'pod-5', name: 'GPU Workstation Pod A', floor: 'Floor 3 High-Compute Lab', status: 'available', hasMonitor: true, powerOutlet: true, gpu: 'NVIDIA RTX 4090' },
   { id: 'pod-6', name: 'GPU Workstation Pod B', floor: 'Floor 3 High-Compute Lab', status: 'occupied', until: '2:00 PM', hasMonitor: true, powerOutlet: true, gpu: 'NVIDIA RTX 4090' }
+];
+
+export const mockCampusItems = [
+  {
+    id: 'item-1',
+    name: 'CS 380 Deep RL & Search Course Reader',
+    category: 'Textbooks & Packets',
+    description: 'Official printed lecture notes, Bellman proofs, formula sheets, and past midterm practice packets.',
+    price: 18.00,
+    stock: 35,
+    inStock: true,
+    badge: 'Required Material'
+  },
+  {
+    id: 'item-2',
+    name: 'CS 301 Distributed Systems Hardware Lab Kit',
+    category: 'Hardware & Lab Kits',
+    description: 'Breadboard, ESP32 microcontrollers, network transceiver modules, and USB-C debugging cables.',
+    price: 35.00,
+    stock: 20,
+    inStock: true,
+    badge: 'Lab Essential'
+  },
+  {
+    id: 'item-3',
+    name: 'CampusPulse Engineering Varsity Hoodie',
+    category: 'Campus Merchandise',
+    description: 'Heavyweight organic cotton navy hoodie embroidered with the official university crest.',
+    price: 28.00,
+    stock: 45,
+    inStock: true,
+    badge: 'Official Swag'
+  },
+  {
+    id: 'item-4',
+    name: 'MATH 240 Stochastic Processes Solutions Manual',
+    category: 'Textbooks & Packets',
+    description: 'Step-by-step Markov Chain and Brownian motion simulation code walkthroughs in Python.',
+    price: 22.00,
+    stock: 18,
+    inStock: true
+  },
+  {
+    id: 'item-5',
+    name: '24/7 Library RFID High-Speed Fast-Pass Badge',
+    category: 'RFID & Passes',
+    description: 'Contactless encrypted keycard for instant tap-in access to Turing Wing Floor 3 Silent Focus Pods.',
+    price: 10.00,
+    stock: 80,
+    inStock: true,
+    badge: 'Popular'
+  }
 ];

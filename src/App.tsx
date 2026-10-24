@@ -17,6 +17,8 @@ import { ReservePodModal } from './components/ReservePodModal';
 import { RsvpModal } from './components/RsvpModal';
 import { CampusCardModal } from './components/CampusCardModal';
 import { DocumentViewerModal } from './components/DocumentViewerModal';
+import { StoreItemModal } from './components/StoreItemModal';
+import { StudentRegistryModal } from './components/StudentRegistryModal';
 
 import { OverviewView } from './views/OverviewView';
 import { CoursesView } from './views/CoursesView';
@@ -45,6 +47,8 @@ function AppContent() {
   const [isReservePodOpen, setIsReservePodOpen] = useState(false);
   const [isRsvpOpen, setIsRsvpOpen] = useState(false);
   const [isCampusCardOpen, setIsCampusCardOpen] = useState(false);
+  const [isStoreModalOpen, setIsStoreModalOpen] = useState(false);
+  const [isStudentRegistryOpen, setIsStudentRegistryOpen] = useState(false);
   const [activeDocument, setActiveDocument] = useState<string | null>(null);
 
   const handleOpenPulseAIWithQuery = (query: string) => {
@@ -96,6 +100,7 @@ function AppContent() {
             setActiveTab('campus-notices');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
+          onOpenStudentRegistry={() => setIsStudentRegistryOpen(true)}
         />
 
         {/* Main Content Area */}
@@ -116,6 +121,8 @@ function AppContent() {
                   onOpenReservePod={() => setIsReservePodOpen(true)}
                   onOpenRsvp={() => setIsRsvpOpen(true)}
                   onOpenCampusCard={() => setIsCampusCardOpen(true)}
+                  onOpenStore={() => setIsStoreModalOpen(true)}
+                  onOpenStudentRegistry={() => setIsStudentRegistryOpen(true)}
                   onOpenDocument={(doc) => setActiveDocument(doc)}
                   onAskPulseAI={handleOpenPulseAIWithQuery}
                   cardBalance={cardBalance}
@@ -216,6 +223,17 @@ function AppContent() {
         onAddFunds={(amt) => {
           addCardFunds(amt);
         }}
+        onOpenStore={() => setIsStoreModalOpen(true)}
+      />
+
+      <StoreItemModal
+        isOpen={isStoreModalOpen}
+        onClose={() => setIsStoreModalOpen(false)}
+      />
+
+      <StudentRegistryModal
+        isOpen={isStudentRegistryOpen}
+        onClose={() => setIsStudentRegistryOpen(false)}
       />
 
       <DocumentViewerModal

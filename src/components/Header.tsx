@@ -10,6 +10,7 @@ interface HeaderProps {
   onOpenPulseAI: () => void;
   unreadCount?: number;
   onOpenNoticeTab?: () => void;
+  onOpenStudentRegistry?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -17,7 +18,8 @@ export const Header: React.FC<HeaderProps> = ({
   onRoleChange,
   onOpenSearch,
   onOpenPulseAI,
-  onOpenNoticeTab
+  onOpenNoticeTab,
+  onOpenStudentRegistry
 }) => {
   const { notices, unreadNoticesCount, markAllNoticesAsRead, markNoticeAsRead, student, showToast } = useCampus();
 
@@ -199,13 +201,22 @@ export const Header: React.FC<HeaderProps> = ({
                 <div className="p-2 space-y-1 text-xs">
                   <div
                     onClick={() => {
-                      showToast(`Verified Record: Alex Chen • GPA: ${student.gpa.toFixed(2)} (${student.cohortRank})`);
+                      if (onOpenStudentRegistry) {
+                        onOpenStudentRegistry();
+                      } else {
+                        showToast(`Verified Record: ${student.name} • GPA: ${student.gpa.toFixed(2)} (${student.cohortRank})`);
+                      }
                       setShowProfileMenu(false);
                     }}
-                    className="px-3 py-2 text-[#444651] hover:bg-[#faf8ff] rounded-lg cursor-pointer flex items-center gap-2"
+                    className="px-3 py-2 text-[#444651] hover:bg-[#faf8ff] rounded-lg cursor-pointer flex items-center justify-between"
                   >
-                    <User className="w-4 h-4 text-[#0051d5]" />
-                    <span>Academic Profile & Registry</span>
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4 text-[#0051d5]" />
+                      <span>Academic Profile & Registry</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-[#0051d5] bg-[#e2e7ff] px-1.5 py-0.5 rounded">
+                      Supabase
+                    </span>
                   </div>
                   <div
                     onClick={() => {

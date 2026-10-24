@@ -13,6 +13,8 @@ interface OverviewViewProps {
   onOpenDocument: (name: string) => void;
   onAskPulseAI: (question: string) => void;
   cardBalance: number;
+  onOpenStore?: () => void;
+  onOpenStudentRegistry?: () => void;
 }
 
 export const OverviewView: React.FC<OverviewViewProps> = ({
@@ -26,6 +28,8 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   onOpenDocument,
   onAskPulseAI,
   cardBalance,
+  onOpenStore,
+  onOpenStudentRegistry,
 }) => {
   const {
     student,
@@ -88,7 +92,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         <section className="flex flex-col lg:flex-row items-stretch justify-between gap-6 bg-white p-6 sm:p-8 rounded-xl shadow-xs border border-[#e2e7ff]">
           <div className="flex flex-col justify-between max-w-xl">
             <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#e2e7ff] text-[#444651] text-[11px] uppercase tracking-wider font-semibold">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#0051d5]"></span>
                   {student.term}
@@ -96,6 +100,16 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 <span className="text-[11px] uppercase tracking-wider text-[#757682] font-semibold">
                   {student.year} • ID: {student.id}
                 </span>
+                {onOpenStudentRegistry && (
+                  <button
+                    type="button"
+                    onClick={onOpenStudentRegistry}
+                    className="text-[11px] font-bold text-[#0051d5] hover:text-[#00236f] bg-[#f2f3ff] hover:bg-[#eaedff] px-2.5 py-0.5 rounded-full transition-all border border-[#dae2fd] cursor-pointer flex items-center gap-1 shadow-2xs"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">badge</span>
+                    Student Registry & Records
+                  </button>
+                )}
               </div>
               <h1 className="text-3xl sm:text-4xl font-bold text-[#131b2e] tracking-tight">
                 Good morning, {student.name.split(' ')[0]} 👋
@@ -679,6 +693,34 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                   <div>
                     <p className="text-xs font-bold text-[#131b2e] group-hover:text-[#0051d5] transition-colors">Campus Card</p>
                     <p className="text-[11px] text-[#0051d5] font-semibold font-mono">${cardBalance.toFixed(2)} Bal</p>
+                  </div>
+                </div>
+
+                <div
+                  onClick={() => onOpenStore && onOpenStore()}
+                  className="p-3 rounded-lg bg-[#f2f3ff] hover:bg-[#eaedff] transition-all flex flex-col gap-2 cursor-pointer border border-[#dae2fd]/50 group"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="material-symbols-outlined text-[#0051d5] text-[22px]">shopping_bag</span>
+                    <span className="text-[10px] font-bold bg-[#dbe1ff] text-[#00236f] px-2 py-0.5 rounded-full">Store</span>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-[#131b2e] group-hover:text-[#0051d5] transition-colors">Campus Store</p>
+                    <p className="text-[11px] text-[#757682]">Order materials & kits</p>
+                  </div>
+                </div>
+
+                <div
+                  onClick={() => onOpenStudentRegistry && onOpenStudentRegistry()}
+                  className="p-3 rounded-lg bg-[#f2f3ff] hover:bg-[#eaedff] transition-all flex flex-col gap-2 cursor-pointer border border-[#dae2fd]/50 group"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="material-symbols-outlined text-[#0051d5] text-[22px]">badge</span>
+                    <span className="text-[10px] font-bold bg-[#d1fae5] text-[#047857] px-2 py-0.5 rounded-full">Registry</span>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-[#131b2e] group-hover:text-[#0051d5] transition-colors">Student Registry</p>
+                    <p className="text-[11px] text-[#757682]">View & add student data</p>
                   </div>
                 </div>
               </div>

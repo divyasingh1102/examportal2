@@ -7,19 +7,23 @@ interface FacultyPortalViewProps {
 }
 
 export const FacultyPortalView: React.FC<FacultyPortalViewProps> = ({ onSwitchToStudent }) => {
-  const { addNotice, showToast } = useCampus();
+  const { addNotice, showToast, students } = useCampus();
 
   const [noticeTitle, setNoticeTitle] = useState('');
   const [noticeBody, setNoticeBody] = useState('');
   const [noticeSent, setNoticeSent] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
 
-  const studentSubmissions = [
-    { id: 'sub-1', name: 'Alex Chen', idNum: '#984210', commit: 'd4e198a', tests: '20/20', status: 'Submitted', time: '10 mins ago', grade: 'A (100%)' },
-    { id: 'sub-2', name: 'Maya Patel', idNum: '#984211', commit: '8a2b1c4', tests: '18/20', status: 'Submitted', time: '1 hour ago', grade: 'Pending' },
-    { id: 'sub-3', name: 'Liam O\'Connor', idNum: '#984212', commit: '5c7e990', tests: '16/20', status: 'Draft Saved', time: '3 hours ago', grade: 'Pending' },
-    { id: 'sub-4', name: 'Sophia Zhang', idNum: '#984213', commit: '1f44a88', tests: '20/20', status: 'Submitted', time: '4 hours ago', grade: 'A (100%)' }
-  ];
+  const studentSubmissions = students.map((s, idx) => ({
+    id: `sub-${s.id}`,
+    name: s.name,
+    idNum: s.id,
+    commit: ['d4e198a', '8a2b1c4', '5c7e990', '1f44a88', '3b9f1e2'][idx % 5],
+    tests: s.gpa >= 3.9 ? '20/20' : s.gpa >= 3.7 ? '18/20' : '16/20',
+    status: 'Submitted',
+    time: `${(idx + 1) * 12} mins ago`,
+    grade: s.gpa >= 3.8 ? 'A (100%)' : 'B+ (88%)'
+  }));
 
   const handlePostNotice = (e: React.FormEvent) => {
     e.preventDefault();
