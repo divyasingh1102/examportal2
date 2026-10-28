@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ExamPulse - Online Exam Portal | Authentication</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .auth-wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: radial-gradient(circle at top, #1e1b4b 0%, #0f172a 70%);
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 460px;
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      border-radius: var(--radius-lg);
+      padding: 2.25rem 2rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .auth-logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--primary), #818cf8);
+      color: white;
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .auth-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.25rem;
+    }
+
+    .auth-subtitle {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 0.35rem;
+      border-radius: var(--radius-md);
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border);
+    }
+
+    .auth-tab {
+      padding: 0.6rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+
+    .auth-tab.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 2px 8px var(--primary-glow);
+    }
+
+    .role-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      padding: 0.5rem;
+      background: rgba(15, 23, 42, 0.4);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+
+    .role-option {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .role-option input[type="radio"] {
+      cursor: pointer;
+      accent-color: var(--primary);
+    }
+
+    .demo-box {
+      margin-top: 1.75rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .demo-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      margin-bottom: 0.75rem;
+      text-align: center;
+    }
+
+    .demo-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    .security-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 1.5rem;
+      padding: 0.4rem;
+      border-radius: var(--radius-sm);
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo">⚡</div>
+        <h1 class="auth-title">ExamPulse</h1>
+        <p class="auth-subtitle">Online Exam & Proctoring Portal</p>
+      </div>
+
+      <!-- Tab Switcher: Login / Register -->
+      <div class="auth-tabs">
+        <button id="tab-login" class="auth-tab active" type="button">Sign In</button>
+        <button id="tab-register" class="auth-tab" type="button">Register</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form">
+        <div class="role-toggle">
+          <label class="role-option">
+            <input type="radio" name="login-role" value="student" checked>
+            <span>Student</span>
+          </label>
+          <label class="role-option">
+            <input type="radio" name="login-role" value="admin">
+            <span>Admin / Proctor</span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-email">Email Address</label>
+          <input type="email" id="login-email" class="form-input" placeholder="e.g. student1@portal.com" required autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-password">Password</label>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" id="login-submit-btn" class="btn btn-primary btn-lg" style="width: 100%;">
+          Sign In to Portal
+        </button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" style="display: none;">
+        <div class="form-group">
+          <label class="form-label" for="register-name">Full Name</label>
+          <input type="text" id="register-name" class="form-input" placeholder="e.g. Alex Turner" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="register-email">Email Address</label>
+          <input type="email" id="register-email" class="form-input" placeholder="e.g. alex@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="register-password">Password</label>
+          <input type="password" id="register-password" class="form-input" placeholder="Min. 6 characters" minlength="6" required>
+        </div>
+
+        <button type="submit" id="register-submit-btn" class="btn btn-primary btn-lg" style="width: 100%;">
+          Create Student Account
+        </button>
+      </form>
+
+      <!-- Quick Demo Logins for Hackathon Evaluators -->
+      <div class="demo-box">
+        <div class="demo-title">Judge & Evaluator Quick Demo Accounts</div>
+        <div class="demo-buttons">
+          <button type="button" class="btn btn-sm btn-outline-primary" id="demo-student-btn">
+            👤 Student Demo
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-primary" id="demo-admin-btn">
+            🛡️ Admin Demo
+          </button>
+        </div>
+      </div>
+
+      <div class="security-badge">
+        <span>🔒 Anti-Cheat Proctoring: Tab-Switch Detection & Shuffling Active</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+  <script type="module" src="/js/auth.js"></script>
+</body>
+</html>

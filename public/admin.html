@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin & Proctor Dashboard | ExamPulse</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Chart.js CDN as strictly permitted -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .admin-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .admin-stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .admin-stat-icon {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      font-size: 1.75rem;
+      opacity: 0.25;
+    }
+
+    .admin-stat-label {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+    }
+
+    .admin-stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    /* Charts Row */
+    .charts-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.75rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .chart-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .chart-container {
+      position: relative;
+      height: 320px;
+      width: 100%;
+    }
+
+    /* Tabs for Admin View */
+    .admin-nav-tabs {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+      overflow-x: auto;
+    }
+
+    .admin-nav-tab {
+      padding: 0.6rem 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .admin-nav-tab.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 2px 8px var(--primary-glow);
+    }
+
+    .admin-nav-tab:hover:not(.active) {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Question Bank Options Inputs */
+    .option-input-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .option-radio {
+      accent-color: var(--success);
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 992px) {
+      .charts-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app-navbar"></div>
+
+  <div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.75rem; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h1 style="font-size: 1.75rem; font-weight: 700;">Admin Analytics & Question Bank</h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+          Real-time performance analytics, integrity monitoring, and question bank management.
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem;">
+        <button id="add-question-btn" class="btn btn-primary">
+          + Add MCQ Question
+        </button>
+        <button id="add-exam-btn" class="btn btn-secondary">
+          + Create Exam
+        </button>
+      </div>
+    </div>
+
+    <!-- Admin KPI Cards -->
+    <div class="admin-stats-grid">
+      <div class="admin-stat-card">
+        <span class="admin-stat-icon">📚</span>
+        <div class="admin-stat-label">Active Exams</div>
+        <div id="stat-total-exams" class="admin-stat-value">--</div>
+      </div>
+      <div class="admin-stat-card">
+        <span class="admin-stat-icon">👥</span>
+        <div class="admin-stat-label">Enrolled Students</div>
+        <div id="stat-total-students" class="admin-stat-value">--</div>
+      </div>
+      <div class="admin-stat-card">
+        <span class="admin-stat-icon">📝</span>
+        <div class="admin-stat-label">Total Submissions</div>
+        <div id="stat-total-attempts" class="admin-stat-value">--</div>
+      </div>
+      <div class="admin-stat-card">
+        <span class="admin-stat-icon">🎯</span>
+        <div class="admin-stat-label">Global Avg Score</div>
+        <div id="stat-avg-score" class="admin-stat-value" style="color: #38bdf8;">--%</div>
+      </div>
+      <div class="admin-stat-card">
+        <span class="admin-stat-icon">🚨</span>
+        <div class="admin-stat-label">Security Flagged</div>
+        <div id="stat-flagged-count" class="admin-stat-value" style="color: #f87171;">--</div>
+      </div>
+    </div>
+
+    <!-- Charts Row (Judges twist requirements) -->
+    <div class="charts-row">
+      <!-- Chart 1: Per-Question Accuracy Bar Chart -->
+      <div class="chart-card">
+        <div class="card-header">
+          <h3 class="card-title">
+            <span>📊</span> Per-Question Accuracy (% Correct)
+          </h3>
+          <span class="badge badge-primary">Harder Twist C</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="questionAccuracyChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 2: Average Score Across Exams -->
+      <div class="chart-card">
+        <div class="card-header">
+          <h3 class="card-title">
+            <span>📈</span> Average Score Across Exams
+          </h3>
+          <span class="badge badge-success">Live Metrics</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="examAverageChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Sub-navigation Tabs -->
+    <div class="admin-nav-tabs">
+      <button id="tab-btn-exams" class="admin-nav-tab active">
+        Exams Summary Table
+      </button>
+      <button id="tab-btn-attempts" class="admin-nav-tab">
+        Student Attempts & Tab Violations
+      </button>
+      <button id="tab-btn-questions" class="admin-nav-tab">
+        Question Bank CRUD
+      </button>
+    </div>
+
+    <!-- Section 1: Exams Summary Table -->
+    <div id="section-exams" class="card" style="margin-bottom: 2.5rem;">
+      <div class="card-header">
+        <h3 class="card-title">All Exams & Average Performance</h3>
+      </div>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Assessment Title</th>
+              <th>Subject</th>
+              <th>Duration</th>
+              <th>Total Marks</th>
+              <th>Attempts</th>
+              <th>Average Score</th>
+            </tr>
+          </thead>
+          <tbody id="exams-table-body">
+            <tr>
+              <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                Loading exams table...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 2: Student Attempts Monitoring -->
+    <div id="section-attempts" class="card" style="display: none; margin-bottom: 2.5rem;">
+      <div class="card-header">
+        <h3 class="card-title">Student Submissions & Tab Switch Violations</h3>
+      </div>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Attempt ID</th>
+              <th>Student Name</th>
+              <th>Exam</th>
+              <th>Score</th>
+              <th>Time Taken</th>
+              <th>Tab Violations</th>
+              <th>Auto-Submitted?</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="admin-attempts-table-body">
+            <tr>
+              <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                Loading attempt records...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 3: Question Bank CRUD -->
+    <div id="section-questions" class="card" style="display: none; margin-bottom: 2.5rem;">
+      <div class="card-header">
+        <h3 class="card-title">Question Bank Repository</h3>
+        <span id="question-count-badge" class="badge badge-primary">0 Questions</span>
+      </div>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Exam</th>
+              <th>Question Text</th>
+              <th>Category</th>
+              <th>Marks</th>
+              <th>Correct Answer Key</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="questions-table-body">
+            <tr>
+              <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                Loading questions repository...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add / Edit Question -->
+  <div id="question-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 620px;">
+      <div class="modal-header">
+        <h3 id="question-modal-title" class="card-title">Add MCQ Question to Bank</h3>
+        <button id="question-modal-close" class="btn btn-sm btn-secondary">✕</button>
+      </div>
+      <form id="question-form">
+        <div class="modal-body">
+          <input type="hidden" id="q-edit-id" value="">
+
+          <div class="form-group">
+            <label class="form-label" for="q-modal-exam">Assign to Exam *</label>
+            <select id="q-modal-exam" class="form-select" required>
+              <!-- Filled by JS -->
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="q-modal-text">Question Text *</label>
+            <textarea id="q-modal-text" class="form-textarea" rows="3" placeholder="Enter clear, concise question statement..." required></textarea>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="q-modal-category">Category / Tag</label>
+              <input type="text" id="q-modal-category" class="form-input" placeholder="e.g. Node.js, Databases">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="q-modal-marks">Marks / Points</label>
+              <input type="number" id="q-modal-marks" class="form-input" value="5" min="1" max="50" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Options (Select the radio button beside the Correct Answer) *
+            </label>
+
+            <!-- Option A -->
+            <div class="option-input-row">
+              <input type="radio" name="correct-option-radio" value="0" class="option-radio" checked title="Mark as correct answer">
+              <span style="font-weight: 700; width: 20px;">A.</span>
+              <input type="text" id="q-opt-0" class="form-input" placeholder="Option text for A..." required>
+            </div>
+
+            <!-- Option B -->
+            <div class="option-input-row">
+              <input type="radio" name="correct-option-radio" value="1" class="option-radio" title="Mark as correct answer">
+              <span style="font-weight: 700; width: 20px;">B.</span>
+              <input type="text" id="q-opt-1" class="form-input" placeholder="Option text for B..." required>
+            </div>
+
+            <!-- Option C -->
+            <div class="option-input-row">
+              <input type="radio" name="correct-option-radio" value="2" class="option-radio" title="Mark as correct answer">
+              <span style="font-weight: 700; width: 20px;">C.</span>
+              <input type="text" id="q-opt-2" class="form-input" placeholder="Option text for C..." required>
+            </div>
+
+            <!-- Option D -->
+            <div class="option-input-row">
+              <input type="radio" name="correct-option-radio" value="3" class="option-radio" title="Mark as correct answer">
+              <span style="font-weight: 700; width: 20px;">D.</span>
+              <input type="text" id="q-opt-3" class="form-input" placeholder="Option text for D..." required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="q-modal-explanation">Explanation (Shown to students in result review)</label>
+            <textarea id="q-modal-explanation" class="form-textarea" rows="2" placeholder="Explain why the correct answer is right..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="question-modal-cancel" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="question-modal-submit" class="btn btn-primary">Save Question</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Create Exam -->
+  <div id="exam-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="card-title">Create New Exam</h3>
+        <button id="exam-modal-close" class="btn btn-sm btn-secondary">✕</button>
+      </div>
+      <form id="exam-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="exam-title-input">Exam Title *</label>
+            <input type="text" id="exam-title-input" class="form-input" placeholder="e.g. Operating Systems & Concurrency" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="exam-subject-input">Subject *</label>
+            <input type="text" id="exam-subject-input" class="form-input" placeholder="e.g. Systems Engineering" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="exam-desc-input">Description</label>
+            <textarea id="exam-desc-input" class="form-textarea" rows="2" placeholder="Brief summary of test scope..."></textarea>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="exam-duration-input">Duration (Minutes)</label>
+              <input type="number" id="exam-duration-input" class="form-input" value="10" min="1" max="180" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="exam-marks-input">Passing Score (Pts)</label>
+              <input type="number" id="exam-marks-input" class="form-input" value="20" min="1" required>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="exam-modal-cancel" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Exam</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+  <script type="module" src="/js/admin.js"></script>
+</body>
+</html>

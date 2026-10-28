@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard | ExamPulse Online Exam Portal</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .dash-hero {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(30, 41, 59, 0.4));
+      border: 1px solid rgba(79, 70, 229, 0.25);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .dash-hero-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.25rem;
+    }
+
+    .dash-hero-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 650px;
+    }
+
+    .proctor-notice {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      color: #fca5a5;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .exams-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .exam-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .exam-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px -5px var(--primary-glow);
+    }
+
+    .exam-card-top {
+      margin-bottom: 1.25rem;
+    }
+
+    .exam-subject-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #818cf8;
+      margin-bottom: 0.5rem;
+      display: inline-block;
+    }
+
+    .exam-card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .exam-card-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1.25rem;
+    }
+
+    .exam-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      padding: 0.85rem;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: var(--radius-md);
+      margin-bottom: 1.25rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .exam-meta-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .meta-label {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .meta-value {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .modal-rules-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+    }
+
+    .modal-rules-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .modal-rules-list li span.rule-num {
+      width: 24px;
+      height: 24px;
+      background: var(--primary-glow);
+      color: #818cf8;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-navbar"></div>
+
+  <div class="container">
+    <!-- Hero / Welcome -->
+    <div class="dash-hero">
+      <div>
+        <h1 class="dash-hero-title">Welcome back, <span id="student-display-name">Student</span> 👋</h1>
+        <p class="dash-hero-desc">
+          Ready for your timed academic evaluation? Choose an exam below to begin. Questions and options are randomized for each test session.
+        </p>
+      </div>
+      <div class="proctor-notice">
+        <span style="font-size: 1.25rem;">🛡️</span>
+        <div>
+          <strong>Page Visibility Monitoring Active</strong><br>
+          Switching tabs 3 times will automatically submit and terminate your test.
+        </div>
+      </div>
+    </div>
+
+    <!-- Available Exams -->
+    <div class="section-title">
+      <span>📚</span> Available Timed Assessments
+    </div>
+
+    <div id="exams-container" class="exams-grid">
+      <div class="card" style="text-align: center; padding: 2rem;">
+        <p style="color: var(--text-muted);">Loading active exams...</p>
+      </div>
+    </div>
+
+    <!-- My Previous Attempts -->
+    <div class="section-title">
+      <span>📊</span> My Exam History & Results
+    </div>
+
+    <div class="card">
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Attempt ID</th>
+              <th>Assessment</th>
+              <th>Date & Time</th>
+              <th>Score Awarded</th>
+              <th>Percentage</th>
+              <th>Status</th>
+              <th>Tab Violations</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="attempts-table-body">
+            <tr>
+              <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                Loading attempt records...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exam Instructions & Confirmation Modal -->
+  <div id="instructions-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-exam-title" class="card-title">Exam Guidelines & Integrity Rules</h3>
+        <button id="modal-close-btn" class="btn btn-sm btn-secondary">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-main); font-weight: 500;">
+          Please review the anti-cheat guidelines carefully before beginning:
+        </p>
+
+        <ul class="modal-rules-list">
+          <li>
+            <span class="rule-num">1</span>
+            <div><strong>Timed Session:</strong> Once started, the countdown timer cannot be paused. When it reaches 0:00, your exam will auto-submit.</div>
+          </li>
+          <li>
+            <span class="rule-num">2</span>
+            <div><strong>Dynamic Shuffling:</strong> Question sequence and option choices are randomized uniquely for your attempt.</div>
+          </li>
+          <li>
+            <span class="rule-num">3</span>
+            <div>
+              <strong>Tab-Switch Detection:</strong> Browser Page Visibility is strictly enforced.
+              <ul style="margin-top: 0.35rem; padding-left: 1.2rem; font-size: 0.85rem;">
+                <li>1st tab switch / blur: <strong>Warning 1 of 2</strong></li>
+                <li>2nd tab switch / blur: <strong>Warning 2 of 2</strong></li>
+                <li>3rd tab switch / blur: <strong>Immediate Test Termination & Auto-Submit</strong></li>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <span class="rule-num">4</span>
+            <div><strong>Prohibited Actions:</strong> Right-clicking, copying questions, and switching applications are strictly disabled.</div>
+          </li>
+        </ul>
+
+        <div style="background: rgba(79, 70, 229, 0.1); border: 1px solid rgba(79, 70, 229, 0.25); border-radius: var(--radius-md); padding: 0.85rem; font-size: 0.85rem; color: #a5b4fc;">
+          ℹ️ Your test results, question breakdown, and score will be generated instantly upon submission.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="modal-cancel-btn" class="btn btn-secondary">Cancel</button>
+        <button id="modal-start-btn" class="btn btn-primary">
+          I Agree, Start Exam Now 🚀
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+  <script type="module" src="/js/dashboard.js"></script>
+</body>
+</html>

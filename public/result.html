@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assessment Result & Performance Report | ExamPulse</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Score Banner */
+    .result-hero {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(30, 41, 59, 0.6));
+      border: 1px solid rgba(79, 70, 229, 0.3);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      margin-bottom: 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+
+    .result-score-box {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .result-big-score {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: #38bdf8;
+      line-height: 1;
+    }
+
+    .result-total-score {
+      font-size: 1.5rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Auto-submit Warning Banner */
+    .violation-alert-banner {
+      background: rgba(239, 68, 68, 0.15);
+      border: 2px solid var(--danger);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      color: #fca5a5;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+    }
+
+    .violation-alert-banner strong {
+      color: #ffffff;
+      font-size: 1.05rem;
+    }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+    }
+
+    .kpi-title {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .kpi-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* Question Review Cards */
+    .review-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .review-card.correct {
+      border-left: 4px solid var(--success);
+    }
+
+    .review-card.incorrect {
+      border-left: 4px solid var(--danger);
+    }
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .review-question-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 1.25rem;
+    }
+
+    .review-options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .review-option-item {
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border: 1px solid transparent;
+    }
+
+    .review-option-item.chosen-correct {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #6ee7b7;
+      font-weight: 600;
+    }
+
+    .review-option-item.chosen-incorrect {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      font-weight: 600;
+    }
+
+    .review-option-item.correct-answer-key {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: #6ee7b7;
+    }
+
+    .review-option-item.neutral {
+      background: rgba(15, 23, 42, 0.4);
+      color: var(--text-muted);
+    }
+
+    .explanation-box {
+      background: rgba(79, 70, 229, 0.08);
+      border: 1px solid rgba(79, 70, 229, 0.2);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 1rem;
+      font-size: 0.85rem;
+      color: #c7d2fe;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-navbar"></div>
+
+  <div class="container">
+    <!-- Auto-submit Alert Banner (Shown if test was terminated due to violations) -->
+    <div id="violation-banner" class="violation-alert-banner" style="display: none;">
+      <span style="font-size: 2rem;">🚨</span>
+      <div>
+        <strong>Exam Auto-Submitted: Maximum Tab-Switch Violations (3/3) Exceeded</strong>
+        <p style="margin-top: 0.25rem; font-size: 0.9rem;">
+          Our Page Visibility proctor detected that you switched tabs or lost window focus 3 times. The test was immediately terminated and graded with your submitted responses.
+        </p>
+      </div>
+    </div>
+
+    <!-- Timeout Alert Banner -->
+    <div id="timeout-banner" class="violation-alert-banner" style="display: none; background: rgba(245, 158, 11, 0.15); border-color: var(--warning); color: #fde047;">
+      <span style="font-size: 2rem;">⏱️</span>
+      <div>
+        <strong style="color: #fde047;">Exam Auto-Submitted: Time Limit Expired</strong>
+        <p style="margin-top: 0.25rem; font-size: 0.9rem; color: #fef3c7;">
+          The examination duration completed. Your answers were auto-submitted by the server.
+        </p>
+      </div>
+    </div>
+
+    <!-- Hero Score Summary -->
+    <div class="result-hero">
+      <div>
+        <span id="result-subject-badge" class="badge badge-primary" style="margin-bottom: 0.75rem;">Computer Science</span>
+        <h1 id="result-exam-title" style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.75rem;">
+          Assessment Performance Report
+        </h1>
+        <div class="result-score-box">
+          <span id="result-score-val" class="result-big-score">--</span>
+          <span id="result-total-val" class="result-total-score">/ 50</span>
+          <span id="result-percent-val" style="font-size: 1.5rem; font-weight: 700; color: #a5b4fc; margin-left: 0.75rem;">(--%)</span>
+        </div>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+          <span id="result-pass-badge" class="badge badge-success">Passed</span>
+          <span id="result-submission-badge" class="badge badge-primary">Manual Submission</span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <a href="/dashboard.html" class="btn btn-primary btn-lg">
+          ← Return to Dashboard
+        </a>
+        <button onclick="window.print()" class="btn btn-secondary btn-sm">
+          🖨️ Print Report
+        </button>
+      </div>
+    </div>
+
+    <!-- Performance KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-title">Correct Answers</div>
+        <div id="kpi-correct" class="kpi-value" style="color: #10b981;">--</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">Incorrect / Skipped</div>
+        <div id="kpi-incorrect" class="kpi-value" style="color: #ef4444;">--</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">Accuracy Rate</div>
+        <div id="kpi-accuracy" class="kpi-value" style="color: #38bdf8;">--%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">Tab Violations Logged</div>
+        <div id="kpi-violations" class="kpi-value" style="color: #f59e0b;">0 / 3</div>
+      </div>
+    </div>
+
+    <!-- Question-by-Question Detailed Review -->
+    <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+      <h2 style="font-size: 1.35rem; font-weight: 700;">Question Breakdown & Answer Keys</h2>
+      <span style="font-size: 0.85rem; color: var(--text-muted);">Includes server-verified explanations</span>
+    </div>
+
+    <div id="questions-review-container">
+      <div class="card" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+        Loading detailed answer analysis...
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+  <script type="module" src="/js/result.js"></script>
+</body>
+</html>

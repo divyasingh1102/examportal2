@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Assessment Room | ExamPulse</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #0b0f19;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Fixed Proctor Top Header */
+    .exam-header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(10px);
+    }
+
+    .exam-header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .exam-header-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .exam-header-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Sticky Live Timer */
+    .timer-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid var(--border);
+      padding: 0.45rem 1rem;
+      border-radius: var(--radius-full);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .timer-icon {
+      font-size: 1.1rem;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.1); }
+    }
+
+    .timer-text {
+      font-family: monospace;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: #38bdf8;
+    }
+
+    .timer-warning {
+      color: #f87171 !important;
+      animation: alertPulse 0.8s infinite alternate;
+    }
+
+    @keyframes alertPulse {
+      0% { text-shadow: 0 0 4px #ef4444; }
+      100% { text-shadow: 0 0 12px #ef4444; }
+    }
+
+    /* Anti-cheat Proctor Bar */
+    .proctor-banner {
+      background: rgba(239, 68, 68, 0.08);
+      border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+      padding: 0.4rem 2rem;
+      font-size: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fca5a5;
+    }
+
+    .violation-meter {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+    }
+
+    .violation-pills {
+      display: flex;
+      gap: 0.35rem;
+    }
+
+    .violation-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .violation-dot.filled {
+      background: var(--danger);
+      box-shadow: 0 0 8px var(--danger);
+    }
+
+    /* Main Exam Layout */
+    .exam-layout {
+      max-width: 1320px;
+      margin: 1.5rem auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 1.75rem;
+      align-items: start;
+    }
+
+    /* Question Card */
+    .question-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-lg);
+      min-height: 480px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .question-number-badge {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #818cf8;
+      background: var(--primary-glow);
+      padding: 0.3rem 0.8rem;
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(129, 140, 248, 0.3);
+    }
+
+    .question-text {
+      font-size: 1.15rem;
+      font-weight: 600;
+      line-height: 1.6;
+      color: var(--text-main);
+      margin-bottom: 2rem;
+    }
+
+    /* Options List */
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      margin-bottom: 2rem;
+    }
+
+    .option-card {
+      display: flex;
+      align-items: center;
+      padding: 1rem 1.25rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .option-card:hover {
+      border-color: #818cf8;
+      background: rgba(30, 41, 59, 0.9);
+      transform: translateX(4px);
+    }
+
+    .option-card.selected {
+      border-color: var(--primary);
+      background: rgba(79, 70, 229, 0.15);
+      box-shadow: 0 0 12px var(--primary-glow);
+    }
+
+    .option-letter {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-right: 1rem;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .option-card.selected .option-letter {
+      background: var(--primary);
+      color: white;
+    }
+
+    .option-text {
+      font-size: 0.95rem;
+      color: var(--text-main);
+      line-height: 1.4;
+      flex: 1;
+    }
+
+    /* Card Action Footer */
+    .question-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .action-group-left, .action-group-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    /* Question Navigator Sidebar */
+    .navigator-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-lg);
+      position: sticky;
+      top: 6rem;
+    }
+
+    .navigator-header {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Grid of Question Numbers */
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .palette-btn {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .palette-btn:hover {
+      border-color: #818cf8;
+      color: white;
+      transform: scale(1.05);
+    }
+
+    .palette-btn.current {
+      border-color: #38bdf8 !important;
+      color: #38bdf8 !important;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+      font-weight: 700;
+    }
+
+    .palette-btn.answered {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    .palette-btn.reviewed {
+      background: var(--review);
+      border-color: var(--review);
+      color: white;
+    }
+
+    .palette-btn.reviewed.answered {
+      background: linear-gradient(135deg, var(--success) 50%, var(--review) 50%);
+    }
+
+    /* Legend */
+    .palette-legend {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .legend-box {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+    }
+
+    .legend-unanswered { background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border); }
+    .legend-answered { background: var(--success); }
+    .legend-reviewed { background: var(--review); }
+    .legend-current { border: 2px solid #38bdf8; }
+
+    /* Security Warning Modal Styles */
+    .warning-modal-card {
+      border: 2px solid var(--danger);
+      box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
+    }
+
+    .warning-icon-large {
+      font-size: 3rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      animation: alertBounce 0.5s ease infinite alternate;
+    }
+
+    @keyframes alertBounce {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-8px); }
+    }
+
+    @media (max-width: 992px) {
+      .exam-layout {
+        grid-template-columns: 1fr;
+      }
+      .navigator-card {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body oncontextmenu="return false;">
+
+  <!-- Fixed Proctor Header -->
+  <header class="exam-header">
+    <div class="exam-header-left">
+      <div class="brand-icon" style="width: 32px; height: 32px; font-size: 1rem;">⚡</div>
+      <div>
+        <h2 id="exam-display-title" class="exam-header-title">Online Examination</h2>
+        <div class="exam-header-meta">
+          <span id="exam-display-subject" class="badge badge-primary">Computer Science</span>
+          <span class="badge badge-success">● Shuffling Active</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timer & Controls -->
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <button id="fullscreen-btn" class="btn btn-sm btn-secondary" title="Toggle Fullscreen">
+        ⛶ Fullscreen
+      </button>
+
+      <div class="timer-container">
+        <span class="timer-icon">⏳</span>
+        <div id="exam-timer" class="timer-text">--:--</div>
+      </div>
+
+      <button id="quick-submit-btn" class="btn btn-sm btn-danger">
+        Submit Test
+      </button>
+    </div>
+  </header>
+
+  <!-- Proctor Banner -->
+  <div class="proctor-banner">
+    <div>
+      <span>🛡️ Anti-Cheat Protocol: Browser Page Visibility Monitored</span>
+    </div>
+    <div class="violation-meter">
+      <span>Violations: <span id="violation-count-text">0 / 3</span></span>
+      <div class="violation-pills">
+        <div id="v-dot-1" class="violation-dot"></div>
+        <div id="v-dot-2" class="violation-dot"></div>
+        <div id="v-dot-3" class="violation-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exam Layout -->
+  <main class="exam-layout">
+    <!-- Active Question Card -->
+    <div class="question-card">
+      <div>
+        <div class="question-header">
+          <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span id="q-number-badge" class="question-number-badge">Question 1 of 10</span>
+            <span id="q-category-badge" class="badge badge-primary">Category</span>
+          </div>
+          <div style="color: var(--text-dim); font-size: 0.85rem; font-weight: 600;">
+            Marks: <span id="q-marks-text" style="color: var(--text-main);">5</span>
+          </div>
+        </div>
+
+        <h3 id="q-text" class="question-text">
+          Loading question text...
+        </h3>
+
+        <!-- Options Container -->
+        <div id="options-container" class="options-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Navigation & Action Buttons -->
+      <div class="question-actions">
+        <div class="action-group-left">
+          <button id="mark-review-btn" class="btn btn-secondary btn-sm" style="color: #c084fc; border-color: rgba(192, 132, 252, 0.4);">
+            🔖 Mark for Review
+          </button>
+          <button id="clear-choice-btn" class="btn btn-secondary btn-sm" style="color: var(--text-muted);">
+            ✕ Clear Choice
+          </button>
+        </div>
+
+        <div class="action-group-right">
+          <button id="prev-question-btn" class="btn btn-secondary">
+            ← Previous
+          </button>
+          <button id="next-question-btn" class="btn btn-primary">
+            Next →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question Navigator Sidebar -->
+    <aside class="navigator-card">
+      <div class="navigator-header">
+        <span>Question Navigator</span>
+        <span id="progress-text" style="font-size: 0.8rem; color: var(--text-muted);">0/10 Answered</span>
+      </div>
+
+      <!-- Number Grid -->
+      <div id="palette-container" class="palette-grid">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Legend -->
+      <div class="palette-legend">
+        <div class="legend-item">
+          <div class="legend-box legend-answered"></div>
+          <span>Answered</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-box legend-reviewed"></div>
+          <span>Review</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-box legend-unanswered"></div>
+          <span>Unanswered</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-box legend-current"></div>
+          <span>Current</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <button id="final-submit-btn" class="btn btn-danger btn-lg" style="width: 100%;">
+          Submit Assessment 🏁
+        </button>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Submit Confirmation Modal -->
+  <div id="submit-confirm-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="card-title">Confirm Exam Submission</h3>
+        <button id="submit-modal-close" class="btn btn-sm btn-secondary">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom: 1.25rem; color: var(--text-main);">
+          Are you sure you want to finish and submit your exam? You will not be able to change your answers after submission.
+        </p>
+
+        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1rem;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <span style="color: var(--text-muted);">Total Questions:</span>
+            <strong id="modal-summary-total">10</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <span style="color: var(--text-muted);">Answered:</span>
+            <strong id="modal-summary-answered" style="color: #10b981;">0</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <span style="color: var(--text-muted);">Marked for Review:</span>
+            <strong id="modal-summary-reviewed" style="color: #c084fc;">0</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-muted);">Unanswered:</span>
+            <strong id="modal-summary-unanswered" style="color: #f87171;">10</strong>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="cancel-submit-btn" class="btn btn-secondary">Keep Working</button>
+        <button id="confirm-submit-btn" class="btn btn-danger">Confirm & Submit Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB SWITCH SECURITY WARNING MODAL (1st & 2nd Violation) -->
+  <div id="tab-warning-modal" class="modal-overlay">
+    <div class="modal-card warning-modal-card">
+      <div class="modal-header" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3);">
+        <h3 id="warning-modal-title" class="card-title" style="color: #f87171;">
+          ⚠️ Warning 1 of 2: Security Violation Detected
+        </h3>
+      </div>
+      <div class="modal-body" style="text-align: center; padding: 2rem 1.5rem;">
+        <div class="warning-icon-large">🚨</div>
+        <h4 id="warning-modal-headline" style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-main);">
+          Tab Switch or Window Blur Detected
+        </h4>
+        <p id="warning-modal-description" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.5rem;">
+          You left the examination tab. This security violation has been logged to the server.
+          Please stay on this window to maintain academic integrity.
+        </p>
+
+        <div id="warning-remaining-box" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-md); padding: 0.85rem; font-size: 0.9rem; color: #fca5a5; font-weight: 600;">
+          Notice: Switching tabs 3 times will automatically submit and terminate your test!
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content: center;">
+        <button id="warning-ack-btn" class="btn btn-danger btn-lg" style="width: 100%;">
+          I Understand, Return to Test
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+  <script type="module" src="/js/exam.js"></script>
+</body>
+</html>
